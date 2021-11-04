@@ -1,2 +1,2 @@
 # isu
-Intelectual Control Systems
+Intellectual Control Systems
