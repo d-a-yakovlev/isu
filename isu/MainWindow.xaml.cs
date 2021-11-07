@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,36 +40,94 @@ namespace isu
             { 9, new double[]{ 270, 280 } },
         };
 
+        Dictionary<int, int[]> CanBeMoved = new Dictionary<int, int[]>() {
+            { 1, new int[]{ 2, 4 } },
+            { 2, new int[]{ 1, 3, 5 } },
+            { 3, new int[]{ 2, 6 } },
+            { 4, new int[]{ 1, 5, 7 } },
+            { 5, new int[]{ 2, 4, 6, 8 } },
+            { 6, new int[]{ 3, 5, 9 } },
+            { 7, new int[]{ 4, 8 } },
+            { 8, new int[]{ 5, 7, 9 } },
+            { 9, new int[]{ 6, 8 } },
+        };
+
+        /* храним в PosButton отображение позиций в номера кнопок, которые там находятся
+           Позиция 1 => 2 Значит что в первой позиции (верхний левый угол) находиться кнопка с номером 2
+           Пустая позиция имеет как кнопка номер 9
+        */
+        Dictionary<int, int> PosButtonState = new Dictionary<int, int>() {
+            { 1, 1 },{ 2, 2 },{ 3, 3 },{ 4, 4 },{ 5, 5 },{ 6, 6 },{ 7, 7 },{ 8, 8 },{ 9, 9 }
+        };
+
+        Button GetButton(int index) {
+            Dictionary<int, Button> buttons = new Dictionary<int, Button>() {
+            { 1, Btn1 },
+            { 2, Btn2 },
+            { 3, Btn3 },
+            { 4, Btn4 },
+            { 5, Btn5 },
+            { 6, Btn6 },
+            { 7, Btn7 },
+            { 8, Btn8 },
+            };
+            return buttons[index];
+        }
+
+        int GetButtonPosition(Button button)
+        {
+            double x = button.Margin.Left;
+            double y = button.Margin.Top;
+            for (int i=1; i<10; ++i)
+            {
+                if (Positions[i][0] == x && Positions[i][1] == y)
+                    return i;
+            }
+            return 0;
+        }
+
+        int GetButtonPosition(double[] pos)
+        {
+            for (int i = 1; i < 10; ++i)
+            {
+                if (Positions[i][0] == pos[0] && Positions[i][1] == pos[1])
+                    return i;
+            }
+            return 0;
+        }
+        
+
         double[] emptyPos = { 270, 280 };
 
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
             double[] actualPosition = { (sender as Button).Margin.Left, (sender as Button).Margin.Top };
-            bool movable = false;
             if ( (Math.Abs(actualPosition[0] - emptyPos[0]) == 110 &&
-                 actualPosition[1] == emptyPos[1]) 
+                 actualPosition[1] == emptyPos[1])
                  ||
                  (Math.Abs(actualPosition[1] - emptyPos[1]) == 110 &&
                  actualPosition[0] == emptyPos[0]))
             {
-                double[] newPosition = MoveToFreePosition(actualPosition);
-                (sender as Button).Margin = new Thickness(newPosition[0], newPosition[1], 0, 0);
+                MoveToFreePosition(actualPosition, (sender as Button));
+                PosButtonState[GetButtonPosition(sender as Button)] = int.Parse((sender as Button).Content.ToString());
                 if (IsWin())
                     MessageBox.Show("You win boy!");
             }
         }
 
-        public double[] MoveToFreePosition(double[] actualPosition)
+        // actualPosition = Positions[GetButtonPosition(GetButton(index))]
+        public void MoveToFreePosition(double[] actualPosition, Button button)
         {
             double[] newPosition = emptyPos;
             emptyPos = actualPosition;
-            return newPosition;
+            PosButtonState[GetButtonPosition(emptyPos)] = 9;
+            button.Margin = new Thickness(newPosition[0], newPosition[1], 0, 0);
         }
 
         private void Shuffle(object sender, RoutedEventArgs e) {
             int[] generatedIndexs = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             int genInd = random.Next(1, 10);
-            Button[] buttons = { Btn1, Btn2, Btn3, Btn4, Btn5, Btn6, Btn7, Btn8 };
+            
             int chaosParam = 0;
             // while chaosParam % 2 == 0
             for (int i=0; i<9; ++i)
@@ -108,10 +167,16 @@ namespace isu
             for (int i=0; i<8; ++i)
             {
                 double[] position = Positions[generatedIndexs[i]];
-                buttons[i].Margin = new Thickness(position[0], position[1], 0, 0);
+                GetButton(i+1).Margin = new Thickness(position[0], position[1], 0, 0);
             }
 
             emptyPos = Positions[generatedIndexs[8]];
+
+            for (int i = 1; i < 9; ++i)
+            {
+                PosButtonState[GetButtonPosition(GetButton(i))] = i;
+            }
+            PosButtonState[GetButtonPosition(emptyPos)] = 9;
         }
 
         public bool IsWin()
@@ -127,6 +192,56 @@ namespace isu
                 Btn8.Margin.Left == Positions[8][0] && Btn8.Margin.Top == Positions[8][1])
                 return true;
             return false;
+        }
+
+        private void Debug(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(PosButtonState.ToString());
+        }
+
+        Node finalNode;
+
+        void ProcessState(Dictionary<int, int> state, Node rootNode, int depth = 0)
+        {
+            if (rootNode.depth > 30)
+                return;
+
+            int emptyStatePos = GetEmptyFromState(state);
+            int[] moves = CanBeMoved[emptyStatePos];
+            List<int> stateCosts = new List<int>();
+            foreach (var move in moves)
+            {
+                Dictionary<int, int> newState = ApplyMove(state, move, emptyStatePos);
+                int cost = Intellectual.Heuristic(state);
+                if (cost > stateCosts.Min())
+                    return;
+
+                Node stateNode = new Node(move, cost, rootNode, depth);
+                if (cost == 0)
+                {
+                    finalNode = stateNode;
+                    return;
+                }
+
+                ProcessState(newState, stateNode, ++depth);
+            }
+        }
+
+        int GetEmptyFromState(Dictionary<int, int> state)
+        {
+            for (int i=1; i<10; ++i)
+            {
+                if (state[i] == 9)
+                    return i;
+            }
+            return 0;
+        }
+
+        Dictionary<int, int> ApplyMove(Dictionary<int, int> state, int move, int emptyStatePos)
+        {
+            state[emptyStatePos] = state[move];
+            state[move] = 9;
+            return state;
         }
     }
 }

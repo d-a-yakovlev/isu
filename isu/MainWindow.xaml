@@ -5,16 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:isu"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Game" Height="450" Width="800">
     <Grid>
-        <Button x:Name="Btn1" Content="1" HorizontalAlignment="Left" Height="100" Margin="50,60,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold" FontSize="20" Click="Btn_Click"/>
-        <Button x:Name="Btn2" Content="2" HorizontalAlignment="Left" Height="100" Margin="160,60,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold" FontSize="20" Click="Btn_Click"/>
-        <Button x:Name="Btn3" Content="3" HorizontalAlignment="Left" Height="100" Margin="270,60,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click" />
-        <Button x:Name="Btn4" Content="4" HorizontalAlignment="Left" Height="100" Margin="50,170,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click"/>
-        <Button x:Name="Btn5" Content="5" HorizontalAlignment="Left" Height="100" Margin="160,170,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click"/>
-        <Button x:Name="Btn6" Content="6" HorizontalAlignment="Left" Height="100" Margin="270,170,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click" />
-        <Button x:Name="Btn7" Content="7" HorizontalAlignment="Left" Height="100" Margin="50,280,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click"/>
-        <Button x:Name="Btn8" Content="8" HorizontalAlignment="Left" Height="100" Margin="160,280,0,0" VerticalAlignment="Top" Width="100" FontSize="20" FontWeight="Bold" Click="Btn_Click"/>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="0"/>
+                <GradientStop Color="White" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Button x:Name="Btn1" Content="1" HorizontalAlignment="Left" Height="100" Margin="50,60,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold" FontSize="72" Click="Btn_Click" Background="Black" Foreground="White"/>
+        <Button x:Name="Btn2" Content="2" HorizontalAlignment="Left" Height="100" Margin="160,60,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold" FontSize="72" Click="Btn_Click" Background="Black" Foreground="White"/>
+        <Button x:Name="Btn3" Content="3" HorizontalAlignment="Left" Height="100" Margin="270,60,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White" />
+        <Button x:Name="Btn4" Content="4" HorizontalAlignment="Left" Height="100" Margin="50,170,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White"/>
+        <Button x:Name="Btn5" Content="5" HorizontalAlignment="Left" Height="100" Margin="160,170,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White"/>
+        <Button x:Name="Btn6" Content="6" HorizontalAlignment="Left" Height="100" Margin="270,170,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White" />
+        <Button x:Name="Btn7" Content="7" HorizontalAlignment="Left" Height="100" Margin="50,280,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White"/>
+        <Button x:Name="Btn8" Content="8" HorizontalAlignment="Left" Height="100" Margin="160,280,0,0" VerticalAlignment="Top" Width="100" FontSize="72" FontWeight="Bold" Click="Btn_Click" Background="Black" Foreground="White"/>
         <Button Content="Shuffle" HorizontalAlignment="Left" Height="34" Margin="391,60,0,0" VerticalAlignment="Top" Width="118" FontWeight="Bold" FontSize="24"  Click="Shuffle"/>
+        <ListBox HorizontalAlignment="Left" Height="160" Margin="391,110,0,0" VerticalAlignment="Top" Width="258"/>
+        <Button Content="Get solve" HorizontalAlignment="Left" Height="34" Margin="531,60,0,0" VerticalAlignment="Top" Width="118" FontSize="24" FontWeight="Bold"/>
+        <Button Content="Execute All" HorizontalAlignment="Left" Margin="531,292,0,0" VerticalAlignment="Top" Width="118" Height="34" FontSize="20" FontWeight="Bold"/>
+        <Button Content="Execute" HorizontalAlignment="Left" Margin="391,292,0,0" VerticalAlignment="Top" Width="118" Height="34" FontSize="20" FontWeight="Bold" Click="Debug"/>
     </Grid>
 </Window>
