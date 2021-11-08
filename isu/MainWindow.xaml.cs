@@ -28,6 +28,8 @@ namespace isu
 
         Random random = new Random();
 
+        Node finalNode;
+
         Dictionary<int, double[]> Positions = new Dictionary<int, double[]>() {
             { 1, new double[]{ 50,  60 } },
             { 2, new double[]{ 160, 60 } },
@@ -197,25 +199,28 @@ namespace isu
         private void Debug(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(PosButtonState.ToString());
+            Node rootNode = new Node(0, 0);
+            ProcessState(PosButtonState, rootNode);
+            MessageBox.Show(rootNode.ToString());
+            MessageBox.Show(finalNode.ToString());
         }
-
-        Node finalNode;
 
         void ProcessState(Dictionary<int, int> state, Node rootNode, int depth = 0)
         {
-            if (rootNode.depth > 30)
+            if (rootNode.depth > 30 || Intellectual.Heuristic(state) == 0)
+            {
+                finalNode = rootNode;
                 return;
+            }
 
             int emptyStatePos = GetEmptyFromState(state);
             int[] moves = CanBeMoved[emptyStatePos];
-            List<int> stateCosts = new List<int>();
+            List<Node> stateNodes = new List<Node>();
+
             foreach (var move in moves)
             {
                 Dictionary<int, int> newState = ApplyMove(state, move, emptyStatePos);
-                int cost = Intellectual.Heuristic(state);
-                if (cost > stateCosts.Min())
-                    return;
-
+                int cost = Intellectual.Heuristic(newState);
                 Node stateNode = new Node(move, cost, rootNode, depth);
                 if (cost == 0)
                 {
@@ -223,8 +228,12 @@ namespace isu
                     return;
                 }
 
-                ProcessState(newState, stateNode, ++depth);
+                stateNodes.Add(stateNode);
+                //ProcessState(newState, stateNode, ++depth);
             }
+
+            Node pickedNode = Node.MinCostNode(stateNodes);
+            ProcessState(ApplyMove(state, pickedNode.value, emptyStatePos), pickedNode, ++depth);
         }
 
         int GetEmptyFromState(Dictionary<int, int> state)
@@ -239,9 +248,10 @@ namespace isu
 
         Dictionary<int, int> ApplyMove(Dictionary<int, int> state, int move, int emptyStatePos)
         {
-            state[emptyStatePos] = state[move];
-            state[move] = 9;
-            return state;
+            Dictionary<int, int> newState = new Dictionary<int, int>(state);
+            newState[emptyStatePos] = newState[move];
+            newState[move] = 9;
+            return newState;
         }
     }
 }
