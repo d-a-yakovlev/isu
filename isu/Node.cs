@@ -32,11 +32,37 @@ namespace isu
             Node minNode = nodes[0];
             foreach (var node in nodes)
             {
-                if (node.cost < minNode.cost)
-                    minNode = node;
+                if (node.parent.parent is null)
+                {
+                    if (node.cost < minNode.cost)
+                        minNode = node;
+                }
+                else
+                {
+                    if (node.cost < minNode.cost &&
+                    node.value != node.parent.parent.value)
+                        minNode = node;
+                }
+                
             }
 
             return minNode;
+        }
+
+        public static List<Node> MinCostNodes(List<Node> nodes)
+        {
+            Node minNode = nodes[0];
+            List<Node> minNodes = new List<Node>();
+            foreach (var node in nodes)
+            {
+                if (node.cost <= minNode.cost)
+                {
+                    minNode = node;
+                    minNodes.Add(node);
+                }
+            }
+
+            return minNodes;
         }
     }
 }

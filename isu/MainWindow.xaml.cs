@@ -198,11 +198,19 @@ namespace isu
 
         private void Debug(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(PosButtonState.ToString());
             Node rootNode = new Node(0, 0);
+            finalNode = null;
             ProcessState(PosButtonState, rootNode);
-            MessageBox.Show(rootNode.ToString());
-            MessageBox.Show(finalNode.ToString());
+            //MessageBox.Show(rootNode.ToString());
+            //MessageBox.Show(finalNode.ToString());
+            if (finalNode.cost != 0)
+            {
+                MessageBox.Show("Решение не нашлось");
+            }
+            else
+            {
+                MessageBox.Show("Решение нашлось");
+            }
         }
 
         void ProcessState(Dictionary<int, int> state, Node rootNode, int depth = 0)
@@ -232,6 +240,7 @@ namespace isu
                 //ProcessState(newState, stateNode, ++depth);
             }
 
+            //List<Node> pickedNodes = Node.MinCostNodes(stateNodes);
             Node pickedNode = Node.MinCostNode(stateNodes);
             ProcessState(ApplyMove(state, pickedNode.value, emptyStatePos), pickedNode, ++depth);
         }
